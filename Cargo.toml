@@ -1,0 +1,24 @@
+[package]
+name = "camera_bug"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies.bevy]
+version = "0.14.2"
+default-features = false
+features = [
+    # basic dependencies
+    "x11", "wayland",
+    "multi_threaded",
+    "bevy_render", "bevy_winit", "bevy_core_pipeline",
+    # dependencies to display framerate and viewport
+    "bevy_asset", "bevy_ui", "bevy_text", "default_font", "bevy_dev_tools",
+    # dependencies for the bug
+    "hdr",
+]
+
+[profile.dev]
+opt-level = 0
+
+[profile.dev.package."*"]
+opt-level = 3
