@@ -37,7 +37,7 @@ fn main() {
             setup,
         ))
         .add_systems(Update, (
-            resize_camera_b_viewport,
+            resize_camera_viewport,
             cycle_animation_type
         ))
         .run();
@@ -63,9 +63,7 @@ fn setup(
     .insert(AnimatedViewport)
     .id();
 
-    // Creating some UI so above camera's viewport can be seen.
-    // NOT required to trigger the bug.
-    commands.spawn( NodeBundle {
+    commands.spawn( NodeBundle { // Creating some UI so above camera's viewport can be seen. NOT required to trigger the bug.
         style: Style {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
@@ -119,7 +117,7 @@ fn cycle_animation_type(
 struct AnimatedViewport;
 
 // Demonstration of the bug.
-fn resize_camera_b_viewport(
+fn resize_camera_viewport(
     window: Query<&Window, With<PrimaryWindow>>,
     mut camera: Query<&mut Camera, With<AnimatedViewport>>,
     time: Res<Time>,
@@ -135,42 +133,43 @@ fn resize_camera_b_viewport(
     const MINIMAL_SIZE_PERCENTAGE_OF_WINDOW: f32 = 0.1;
     let minimal_size = size * MINIMAL_SIZE_PERCENTAGE_OF_WINDOW;
 
-    match camera.viewport {
-        None => camera.viewport = Some( Viewport { physical_size: [1,1].into(), ..default() } ),
-        Some(ref mut viewport) => { match animation.0 {
-            AnimationTag::Static => { // FPS is unaffected
-                viewport.physical_position = minimal_size.as_uvec2();
-                viewport.physical_size = (size - 2. * minimal_size).as_uvec2();
-            }
-            AnimationTag::Resize => { // FPS drops more each frame. Exact animation details do not matter.
-                viewport.physical_position = minimal_size.as_uvec2();
-                viewport.physical_size.x = f32::lerp(minimal_size.x, size.x-2.*minimal_size.x, t) as u32;
-                viewport.physical_size.y = f32::lerp(size.y-2.*minimal_size.y, minimal_size.y, t) as u32;
-            },
-            AnimationTag::MovementOnly => { // FPS is unaffected if viewport area remains constant, even when moving
-                viewport.physical_position.x = f32::lerp(minimal_size.x, size.x-2.*minimal_size.x, t) as u32;
-                viewport.physical_position.y = f32::lerp(minimal_size.y, size.y-2.*minimal_size.y, t) as u32;
-                viewport.physical_size = minimal_size.as_uvec2();
-            }
-            AnimationTag::ForceCrash => { // Crash when viewport dimensions are very thin, but very long.
-                viewport.physical_position = minimal_size.as_uvec2();
-                viewport.physical_size = ((size.x - 2. * minimal_size.x) as u32, 1).into();
+    let Some(ref mut viewport) = camera.viewport else {
+        camera.viewport = Some( Viewport { physical_size: [1,1].into(), ..default() } );
+        return;
+    };
+    
+    match animation.0 {
+        AnimationTag::Static => { // FPS is unaffected
+            viewport.physical_position = minimal_size.as_uvec2();
+            viewport.physical_size = (size - 2. * minimal_size).as_uvec2();
+        }
+        AnimationTag::Resize => { // FPS drops more each frame. Exact animation details do not matter.
+            viewport.physical_position = minimal_size.as_uvec2();
+            viewport.physical_size.x = f32::lerp(minimal_size.x, size.x-2.*minimal_size.x, t) as u32;
+            viewport.physical_size.y = f32::lerp(size.y-2.*minimal_size.y, minimal_size.y, t) as u32;
+        },
+        AnimationTag::MovementOnly => { // FPS is unaffected if viewport area remains constant, even when moving
+            viewport.physical_position = Vec2::lerp(minimal_size, size-2.*minimal_size, t).as_uvec2();
+            viewport.physical_size = minimal_size.as_uvec2();
+        },
+        AnimationTag::ForceCrash => { // Crash when viewport dimensions are very thin, but very long.
+            viewport.physical_position = minimal_size.as_uvec2();
+            viewport.physical_size = UVec2::new( (size.x - 2. * minimal_size.x) as u32, 1); // Horizontal line, but vertical line triggers the bug as well
 
-                /* 
-                This is the kind of error I get when this switch prong runs:
+            /* 
+            This is the kind of error I get when this switch prong runs:
 
-                ERROR wgpu::backend::wgpu_core: Handling wgpu errors as fatal by default    
-                thread 'Compute Task Pool (4)' panicked at [REDACTED]/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wgpu-0.20.1/src/backend/wgpu_core.rs:2996:5:
-                wgpu error: Validation Error
+            ERROR wgpu::backend::wgpu_core: Handling wgpu errors as fatal by default    
+            thread 'Compute Task Pool (4)' panicked at [REDACTED]/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wgpu-0.20.1/src/backend/wgpu_core.rs:2996:5:
+            wgpu error: Validation Error
 
-                Caused by:
-                In Device::create_texture
-                note: label = `bloom_texture`
-                Dimension X value 35170 exceeds the limit of 32768
+            Caused by:
+            In Device::create_texture
+            note: label = `bloom_texture`
+            Dimension X value 35170 exceeds the limit of 32768
 
-                */
-            }
-        }},
+            */
+        },
     }
 
 }
