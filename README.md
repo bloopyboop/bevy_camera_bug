@@ -16,8 +16,9 @@ Bug happens with X and i3wm too, with or without a compositor.
 - System changing the size of the camera's viewport every frame
 
 ## Observed effects
-- FPS will drain continuously.
-- bevy will crash when the viewport is very long and thin (error message is commented in 'main.rs')
+- Debug: FPS will drain continuously.
+- Release: FPS do not drop each frame, instead only when the viewport's X size is large and Y size small. The FPS returns to normal for small X size and large Y size.
+- Debug and Release: bevy will crash when the viewport is very long and thin (error message is commented in 'main.rs')
 
 This does not occur when the area remains constant, even if the
 viewport is moving.
