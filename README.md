@@ -5,6 +5,7 @@ This repository demonstrates a bug in bevy 0.14.2.
 - Display Server: Wayland
 - Compositor: Hyprland (sway-wm based)
 - `AdapterInfo { name: "NVIDIA GeForce GTX 1080", vendor: 4318, device: 7040, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "560.35.03", backend: Vulkan }`
+
 Bug happens with X and i3wm too, with or without a compositor.
 
 ## Required parts for the bug to trigger
