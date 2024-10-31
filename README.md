@@ -6,13 +6,10 @@ Here is my AdapterInfo:
 
 When a 2D camera has HDR and bloom enabled, resizing its viewport
 such that the aspect ratio changes, will continuously drain FPS.
-
 This does not occur when the area remains constant, even if the
 viewport is moving.
-
 Resizing the window will restore the FPS, but does not
 permanently fix the issue.
-
 Comments in 'main.rs' elaborate relevant details.
 
 Additionally, the program crashes when the viewport's dimensions
