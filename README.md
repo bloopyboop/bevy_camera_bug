@@ -19,7 +19,7 @@ Bug happens with X and i3wm too, with or without a compositor.
 - Release: FPS do not drop each frame, instead only when the viewport's X size is large and Y size small. The FPS returns to normal for small X size and large Y size.
 - Debug and Release: bevy will crash when the viewport is very long and thin (error message is commented in 'main.rs')
 
-This does not occur when the area remains constant, even if the
+None of the above bugs occur when the viewport's area remains constant, even if the
 viewport is moving.
 Resizing the window will restore the FPS, but does not
 permanently fix the issue.
