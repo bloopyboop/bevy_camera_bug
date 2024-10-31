@@ -1,21 +1,20 @@
 This repository demonstrates a bug in bevy 0.14.2.
 
-My system:
+## My system
 - OS: Linux
 - Display Server: Wayland
 - Compositor: Hyprland (sway-wm based)
 - `AdapterInfo { name: "NVIDIA GeForce GTX 1080", vendor: 4318, device: 7040, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "560.35.03", backend: Vulkan }`
-
 Bug happens with X and i3wm too, with or without a compositor.
 
-Required parts for the bug to trigger:
+## Required parts for the bug to trigger
 - Debug build (might not be required, but I didn't notice it in Release)
 - 2D Camera
   - HDR enabled
   - BloomSettings component with an intensity greater than zero
 - System changing the size of the camera's viewport every frame
 
-Observed effects:
+## Observed effects
 - FPS will drain continuously.
 - bevy will crash when the viewport is very long and thin (error message is commented in 'main.rs')
 
@@ -25,9 +24,10 @@ Resizing the window will restore the FPS, but does not
 permanently fix the issue.
 Comments in 'main.rs' elaborate relevant details.
 
-To reproduce:
+## To reproduce
+- Have rust nightly toolchain installed (if you want to test stable, remove rust-toolchain.toml)
 - Clone the repo
-- 'cargo run'
+- `cargo run`
 
 Press SPACE in the application to cycle through four test cases:
 - Static viewport -> No effect on FPS
