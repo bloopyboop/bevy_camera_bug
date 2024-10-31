@@ -1,5 +1,9 @@
 This repository demonstrates a bug in bevy 0.14.2.
 
+My system is Arch Linux on Wayland with Hyprland (sway-wm based) compositor. I encounter the bug with X, as well.
+Here is my AdapterInfo: 
+`AdapterInfo { name: "NVIDIA GeForce GTX 1080", vendor: 4318, device: 7040, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "560.35.03", backend: Vulkan }`
+
 When a 2D camera has HDR and bloom enabled, resizing its viewport
 such that the aspect ratio changes, will continuously drain FPS.
 
@@ -9,9 +13,11 @@ viewport is moving.
 Resizing the window will restore the FPS, but does not
 permanently fix the issue.
 
+Comments in 'main.rs' elaborate relevant details.
+
 Additionally, the program crashes when the viewport's dimensions
 are very long and thin. The error message can be found in
-'main.rs'. Comments in 'main.rs' go into detail.
+'main.rs'.
 
 All of this only noticably happens in debug builds - Release
 might still have the bug, but would require sensitive
