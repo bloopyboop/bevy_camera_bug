@@ -9,7 +9,6 @@ This repository demonstrates a bug in bevy 0.14.2.
 Bug happens with X and i3wm too, with or without a compositor.
 
 ## Required parts for the bug to trigger
-- Debug build (might not be required, but I didn't notice it in Release)
 - 2D Camera
   - HDR enabled
   - BloomSettings component with an intensity greater than zero
