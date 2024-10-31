@@ -8,7 +8,6 @@ use bevy::render::camera::Viewport;
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
 use bevy::dev_tools::fps_overlay::{FpsOverlayPlugin, FpsOverlayConfig};
 
-
 // No relevant settings for the bug in here. Just sets up bevy.
 fn main() {
     App::new()
@@ -43,11 +42,9 @@ fn main() {
         .run();
 }
 
-// Setting up of the bug
 fn setup(
     mut commands: Commands,
 ) {
-
     let bug_camera = commands.spawn(( // Camera which demonstrates the bug.
         Camera2dBundle {
             camera: Camera {
@@ -130,7 +127,8 @@ fn resize_camera_b_viewport(
     let window = window.single();
     let mut camera = camera.single_mut();
 
-    // Animation parameters. Their specifics are irrelevant for the bug.
+    // Animation parameters. Their specifics are irrelevant for the bug, except that they make sure
+    // the viewport's dimensions are always valid.
     let t = (f32::sin(time.elapsed().as_secs_f32()) + 1.) / 2.; // Oscillates between 0 and 1.
     let size = window.physical_size().as_vec2();
     const MINIMAL_SIZE_PERCENTAGE_OF_WINDOW: f32 = 0.1;
@@ -155,7 +153,7 @@ fn resize_camera_b_viewport(
             }
             AnimationTag::ForceCrash => { // Crash when viewport dimensions are very thin, but very long.
                 viewport.physical_position = minimal_size.as_uvec2();
-                viewport.physical_size = ((size.x - minimal_size.x) as u32, 1).into();
+                viewport.physical_size = ((size.x - 2. * minimal_size.x) as u32, 1).into();
 
                 /* 
                 This is the kind of error I get when this switch prong runs:
