@@ -21,7 +21,7 @@ implementation.
 
 
 Press SPACE in the application to cycle through four test cases:
-    - Static viewport
-    - Continuously resizing viewport
-    - Moving viewport with constant area
-    - Forced crash by making the viewport very long and thin
+- Static viewport
+- Continuously resizing viewport
+- Moving viewport with constant area
+- Forced crash by making the viewport very long and thin
