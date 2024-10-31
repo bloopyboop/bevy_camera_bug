@@ -32,6 +32,7 @@ fn main() {
             },
         })
         .insert_resource( Animation(AnimationTag::Static) )
+        .insert_resource(Msaa::Sample8) // I thought MSAA might be a culprit, but the value here makes no difference
         .add_systems(Startup, (
             setup,
         ))

@@ -13,6 +13,12 @@ Additionally, the program crashes when the viewport's dimensions
 are very long and thin. The error message can be found in
 'main.rs'. Comments in 'main.rs' go into detail.
 
+All of this only noticably happens in debug builds - Release
+might still have the bug, but would require sensitive
+benchmarking to detect. Even if it doesn't have the bug, its
+existence in debug might point to a problematic bloom
+implementation.
+
 
 Press SPACE in the application to cycle through four test cases:
     - Static viewport
