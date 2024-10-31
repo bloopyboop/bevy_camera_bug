@@ -8,24 +8,26 @@ My system:
 
 Bug happens with X and i3wm too, with or without a compositor.
 
-When a 2D camera has HDR and bloom enabled, resizing its viewport
-such that the aspect ratio changes, will continuously drain FPS.
+Required parts for the bug to trigger:
+- Debug build (might not be required, but I didn't notice it in Release)
+- 2D Camera
+  - HDR enabled
+  - BloomSettings component with an intensity greater than zero
+- System changing the size of the camera's viewport every frame
+
+Observed effects:
+- FPS will drain continuously.
+- bevy will crash when the viewport is very long and thin (error message is commented in 'main.rs')
+
 This does not occur when the area remains constant, even if the
 viewport is moving.
 Resizing the window will restore the FPS, but does not
 permanently fix the issue.
 Comments in 'main.rs' elaborate relevant details.
 
-Additionally, the program crashes when the viewport's dimensions
-are very long and thin. The error message can be found in
-'main.rs'.
-
-All of this only noticably happens in debug builds - Release
-might still have the bug, but would require sensitive
-benchmarking to detect. Even if it doesn't have the bug, its
-existence in debug might point to a problematic bloom
-implementation.
-
+To reproduce:
+- Clone the repo
+- 'cargo run'
 
 Press SPACE in the application to cycle through four test cases:
 - Static viewport -> No effect on FPS
