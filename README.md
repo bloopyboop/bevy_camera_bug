@@ -1,8 +1,12 @@
 This repository demonstrates a bug in bevy 0.14.2.
 
-My system is Arch Linux on Wayland with Hyprland (sway-wm based) compositor. I encounter the bug with X, as well.
-Here is my AdapterInfo: 
-`AdapterInfo { name: "NVIDIA GeForce GTX 1080", vendor: 4318, device: 7040, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "560.35.03", backend: Vulkan }`
+My system:
+- OS: Linux
+- Display Server: Wayland
+- Compositor: Hyprland (sway-wm based)
+- `AdapterInfo { name: "NVIDIA GeForce GTX 1080", vendor: 4318, device: 7040, device_type: DiscreteGpu, driver: "NVIDIA", driver_info: "560.35.03", backend: Vulkan }`
+
+Bug happens with X and i3wm too, with or without a compositor.
 
 When a 2D camera has HDR and bloom enabled, resizing its viewport
 such that the aspect ratio changes, will continuously drain FPS.
