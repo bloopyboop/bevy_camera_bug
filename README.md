@@ -31,4 +31,4 @@ Press SPACE in the application to cycle through four test cases:
 - Static viewport -> No effect on FPS
 - Continuously resizing viewport -> FPS continuously drains
 - Moving viewport with constant area -> No effect on FPS
-- Forced crash by making the viewport very long and thin -> Crash
+- Setting viewport dimensions to be very long and thin -> Crash
