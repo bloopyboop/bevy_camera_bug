@@ -1,4 +1,11 @@
-This repository demonstrates a bug in bevy 0.14.2.
+This repository demonstrates a bug in multiple versions of bevy.
+
+## Branches
+- main: bevy 0.14.2
+- bevy_main: bevy 0.15.0-dev, rev [#4656698](https://github.com/bevyengine/bevy/commit/46566980a6d69d2bd91505b6acd49ababa4d98f7)
+- bevy_0.15.0-rc.2: bevy 0.15.0-rc.2
+
+All branches demonstrate the bug.
 
 ## My system
 - OS: Linux
@@ -11,7 +18,7 @@ Bug happens with X and i3wm too, with or without a compositor.
 ## Required parts for the bug to trigger
 - 2D Camera
   - HDR enabled
-  - BloomSettings component with an intensity greater than zero
+  - Bloom component with an intensity greater than zero (BloomSettings when on main branch)
 - System changing the size of the camera's viewport every frame
 
 ## Observed effects
@@ -28,6 +35,10 @@ Comments in 'main.rs' elaborate relevant details.
 ## To reproduce
 - Have rust nightly toolchain installed (if you want to test stable, remove rust-toolchain.toml)
 - Clone the repo
+- Checkout the branch for the bevy version you want to test:
+  - bevy 0.14.2: `git checkout main`
+  - bevy 0.15.0-dev: `git checkout bevy_main`
+  - bevy 0.15.0-rc.2: `git checkout bevy_0.15.0-rc.2`
 - `cargo run`
 
 Press SPACE in the application to cycle through four test cases:
