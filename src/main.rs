@@ -1,12 +1,12 @@
 use bevy::prelude::*;
 
-use bevy::core_pipeline::bloom::BloomSettings;
+use bevy::core_pipeline::bloom::Bloom;
 use bevy::window::{WindowResolution, PresentMode, PrimaryWindow};
 use bevy::render::camera::Viewport;
 
 // FPS display, not relevant for the bug
 use bevy::diagnostic::FrameTimeDiagnosticsPlugin;
-use bevy::dev_tools::fps_overlay::{FpsOverlayPlugin, FpsOverlayConfig};
+use bevy::dev_tools::fps_overlay::FpsOverlayPlugin;
 
 // No relevant settings for the bug in here. Just sets up bevy.
 fn main() {
@@ -23,16 +23,8 @@ fn main() {
             })
         )
         .add_plugins(FrameTimeDiagnosticsPlugin)
-        .add_plugins(FpsOverlayPlugin {
-            config: FpsOverlayConfig {
-                text_config: TextStyle {
-                    font_size: 32.0,
-                    ..default()
-                },
-            },
-        })
+        .add_plugins(FpsOverlayPlugin::default())
         .insert_resource( Animation(AnimationTag::Static) )
-        .insert_resource(Msaa::Off) // I thought MSAA might be a culprit, but the value here has no effect on the bug
         .add_systems(Startup, (
             setup,
         ))
@@ -47,44 +39,38 @@ fn setup(
     mut commands: Commands,
 ) {
     let bug_camera = commands.spawn(( // Camera which demonstrates the bug.
-        Camera2dBundle {
-            camera: Camera {
-                hdr: true, // Required to be 'true' for the bug.
-                viewport: Some( Viewport { physical_size: [1,1].into(), ..default() } ), // Setting this so it's not None for 'cycle_animation_type'
-                order: 1, // NOT required, but higher than the other camera, so the viewport can be seen for testing.
-                ..default() // Bug seems indifferent to every other setting.
-            },
-            ..default()
+        Camera {
+            hdr: true, // Required to be 'true' for the bug.
+            viewport: Some( Viewport { physical_size: [1,1].into(), ..default() } ), // Setting this so it's not None for 'cycle_animation_type'
+            order: 1, // NOT required, but higher than the other camera, so the viewport can be seen for testing.
+            ..default() // Bug seems indifferent to every other setting.
         },
-        BloomSettings {
+        Camera2d,
+        Bloom {
             intensity: 0.2, // Required to be greater zero for the bug.
             ..default() // Bug seems indifferent to every other setting.
         },
-    ))
-    .insert(AnimatedViewport)
-    .id();
+        AnimatedViewport
+    )).id();
 
-    commands.spawn( NodeBundle { // Creating some UI so above camera's viewport can be seen. NOT required to trigger the bug.
-        style: Style {
+    commands.spawn(( // Creating some UI so above camera's viewport can be seen. NOT required to trigger the bug.
+        Node { 
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
             ..default()
         },
-        background_color: Color::srgba(1.00, 0.65, 0.45, 1.0).into(),
-        ..default()
-    })
-    .insert(TargetCamera(bug_camera));
+        BackgroundColor(Color::srgba(1.00, 0.65, 0.45, 1.0)),
+        TargetCamera(bug_camera)
+    ));
 
     commands.spawn(( // Camera which is NOT required for the bug. It's only here to display the FPS overlay.
-        Camera2dBundle {
-            camera: Camera {
-                order: 0,
-                ..default()
-            },
+        Camera {
+            order: 0,
             ..default()
         },
-    ))
-    .insert(IsDefaultUiCamera);
+        Camera2d,
+        IsDefaultUiCamera
+    ));
 }
 
 // For testing convenience. NOT required for the bug.
