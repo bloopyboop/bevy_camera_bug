@@ -32,7 +32,7 @@ fn main() {
             },
         })
         .insert_resource( Animation(AnimationTag::Static) )
-        .insert_resource(Msaa::Sample8) // I thought MSAA might be a culprit, but the value here has no effect on the bug
+        .insert_resource(Msaa::Off) // I thought MSAA might be a culprit, but the value here has no effect on the bug
         .add_systems(Startup, (
             setup,
         ))
@@ -50,6 +50,7 @@ fn setup(
         Camera2dBundle {
             camera: Camera {
                 hdr: true, // Required to be 'true' for the bug.
+                viewport: Some( Viewport { physical_size: [1,1].into(), ..default() } ), // Setting this so it's not None for 'cycle_animation_type'
                 order: 1, // NOT required, but higher than the other camera, so the viewport can be seen for testing.
                 ..default() // Bug seems indifferent to every other setting.
             },
@@ -126,17 +127,14 @@ fn resize_camera_viewport(
     let window = window.single();
     let mut camera = camera.single_mut();
 
+    let viewport = camera.viewport.as_mut().expect("Impossible None");
+
     // Animation parameters. Their specifics are irrelevant for the bug, except that they make sure
     // the viewport's dimensions are always valid.
     let t = (f32::sin(time.elapsed().as_secs_f32()) + 1.) / 2.; // Oscillates between 0 and 1.
     let size = window.physical_size().as_vec2();
     const MINIMAL_SIZE_PERCENTAGE_OF_WINDOW: f32 = 0.1;
     let minimal_size = size * MINIMAL_SIZE_PERCENTAGE_OF_WINDOW;
-
-    let Some(ref mut viewport) = camera.viewport else {
-        camera.viewport = Some( Viewport { physical_size: [1,1].into(), ..default() } );
-        return;
-    };
     
     match animation.0 {
         AnimationTag::Static => { // FPS is unaffected
