@@ -37,6 +37,8 @@ fn main() {
 
 fn setup(
     mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let bug_camera = commands.spawn(( // Camera which demonstrates the bug.
         Camera {
@@ -47,7 +49,7 @@ fn setup(
         },
         Camera2d,
         Bloom {
-            intensity: 0.2, // Required to be greater zero for the bug.
+            intensity: 0.5, // Required to be greater zero for the bug.
             ..default() // Bug seems indifferent to every other setting.
         },
         AnimatedViewport
@@ -59,13 +61,60 @@ fn setup(
             height: Val::Percent(100.0),
             ..default()
         },
-        BackgroundColor(Color::srgba(1.00, 0.65, 0.45, 1.0)),
         TargetCamera(bug_camera)
+    ))
+    .with_children(|parent| {
+        parent.spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                left: Val::Percent(0.),
+                height: Val::Percent(100.),
+                width: Val::Px(1.),
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.25, 0.65, 1.00, 1.)),
+        ));
+        parent.spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                right: Val::Percent(0.),
+                height: Val::Percent(100.),
+                width: Val::Px(1.),
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.25, 0.65, 1.00, 1.)),
+        ));
+        parent.spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                height: Val::Px(1.),
+                width: Val::Percent(100.),
+                top: Val::Percent(0.),
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.25, 0.65, 1.00, 1.)),
+        ));
+        parent.spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                height: Val::Px(1.),
+                width: Val::Percent(100.),
+                bottom: Val::Percent(0.),
+                ..default()
+            },
+            BackgroundColor(Color::srgba(0.25, 0.65, 1.00, 1.)),
+        ));
+    });
+
+    commands.spawn(( // Circle with HDR colors to observe bloom behavior
+        Mesh2d(meshes.add(Circle::new(50.0))),
+        MeshMaterial2d(materials.add(ColorMaterial::from_color(Color::srgba(4.00,2.,0.5,1.)))),
     ));
 
     commands.spawn(( // Camera which is NOT required for the bug. It's only here to display the FPS overlay.
         Camera {
             order: 0,
+            clear_color: ClearColorConfig::Custom(Color::BLACK),
             ..default()
         },
         Camera2d,
